@@ -1,7 +1,7 @@
-import mining
-import time
 import datetime
-from xapi_schema import *
+
+from git_data_mining.xapi_schema import *
+
 
 def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes):
     # Z stands for UTC timezone

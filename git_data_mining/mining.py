@@ -1,10 +1,10 @@
-import time
-import os
-from collections import namedtuple
-import xapi
-import json
-import git
+__author__ = "Yassin"
 import csv
+import json
+
+import git
+
+from git_data_mining import xapi
 
 repo_dir = "C:/Users/Yassin/Downloads/smalltestgit"
 
@@ -81,10 +81,10 @@ if __name__ == "__main__":
 
     add_action = action_lists["A"][0]
     add_statemnt = xapi.xapi_statement(add_action["action"],
-                                          add_action["commit"],
+                                       add_action["commit"],
                                           "",
-                                          add_action["action"].change_type,
-                                          file_line_changes)
+                                       add_action["action"].change_type,
+                                       file_line_changes)
     print("Add Statement")
     print(json.dumps(add_statemnt))
 
