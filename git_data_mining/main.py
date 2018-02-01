@@ -62,12 +62,15 @@ def main():
 
     commit_set_path = pathlib.Path("commit_set.json")
     if commit_set_path.exists():
-            commit_set_string = commit_set_path.read_text()
-            if commit_set_string == "":
-                commit_sets = {item["name"]: set() for item in repo_list}
-            else:
-                commit_dict = json.loads(commit_set_string)
-                commit_sets = {k: v.keys() for k, v in commit_dict.items()}
+        commit_set_string = commit_set_path.read_text()
+        if commit_set_string == "":
+            commit_sets = {item["name"]: set() for item in repo_list}
+        else:
+            commit_dict = json.loads(commit_set_string)
+            commit_sets = {k: v.keys() for k, v in commit_dict.items()}
+        for repo in repo_list:
+            if repo["name"] not in commit_sets:
+                commit_sets[repo["name"]] = set()
     else:
         commit_sets = {item["name"]: set() for item in repo_list}
     for item in repo_list:
