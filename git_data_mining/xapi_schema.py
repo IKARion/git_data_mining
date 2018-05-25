@@ -10,3 +10,5 @@ COMMIT_EXTENSION_ID = "http://collide.info/xapi/commit_data"
 
 FILE_ID = "http://activitystrea.ms/schema/1.0/file"
 GIT_EXTENSION_ID = "http://collide.info/xapi/gitAction"
+
+GROUP_EXTENSION = "http.collide.info/group"

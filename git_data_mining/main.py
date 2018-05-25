@@ -23,7 +23,7 @@ def send_xapi_statements(action_lists, file_line_changes, repo_name):
             print("Sent statement:")
             print(statement)
 
-
+#TODO: Mapping from Bitbucket to Moodle users and groups. Use 'mikrokurs_bitbucket_account_mapping.csv'
 def main():
     # Collect all repo_data remote and local in a list
     repo_list = []

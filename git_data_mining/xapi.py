@@ -2,8 +2,8 @@ import datetime
 
 from git_data_mining.xapi_schema import *
 
-
-def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes):
+# TODO: user and group mapping
+def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes, userMapping=None, groupMapping=None):
     # Z stands for UTC timezone
     # example 2013-08-20T14:22:20.028Z
     timestamp_template = "{}-{:0>2}-{:0>2}T{:0>2}:{:0>2}:{:0>2}.000Z"
@@ -45,7 +45,7 @@ def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes):
 
     statement = {
         "actor": {
-            "name": commit.author.name,
+            "name": commit.author.name if userMapping is None else userMapping[commit.author.name],
             "mbox": "mailto:" + commit.author.email,
             # "account": {
             #     "name": commit.author.name,
@@ -87,10 +87,20 @@ def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes):
                     "commit_hash": commit.hexsha,
                     "commit_message": commit.message,
                     "type": COMMIT_EXTENSION_ID
+                },
+                GROUP_EXTENSION : { # Added group extension
+                    repo_name: {
+                        "name": repo_name,
+                        "id": repo_name
+                    }
+
                 }
             }
         }
     }
+    if groupMapping is not None:
+        statement[GROUP_EXTENSION] = groupMapping[repo_name] # Add repo - moodle group mapping
+
     if action_type == "R":
         statement["object"]["definition"]["extensions"][GIT_EXTENSION_ID]["newFileName"] = git_diff.b_path
 

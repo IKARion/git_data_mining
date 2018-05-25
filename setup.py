@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='git_data_mining',
-    version='0.1',
+    version='3.5',
     packages=[''],
     url='https://github.com/IKARion/git_data_mining',
     license='MIT',
