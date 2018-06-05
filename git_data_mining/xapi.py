@@ -3,10 +3,11 @@ import datetime
 from git_data_mining.xapi_schema import *
 
 # TODO: user and group mapping
-def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes, userMapping=None, groupMapping=None):
+def xapi_statement(git_diff, commit, repo_url, repo_name, action_type, file_line_changes, user_mapping=None, group_mapping=None):
     # Z stands for UTC timezone
     # example 2013-08-20T14:22:20.028Z
     timestamp_template = "{}-{:0>2}-{:0>2}T{:0>2}:{:0>2}:{:0>2}.000Z"
+    print(repo_name)
     epoch_time = commit.committed_date
     # utc time
     utc_time = datetime.datetime.utcfromtimestamp(epoch_time)
@@ -43,9 +44,13 @@ def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes, 
     action_data = statement_types[action_type]
     added_lines, deleted_lines = file_line_changes[action_data["fileUrl"]]
 
+    name = commit.author.name
+    if user_mapping:
+        if name in user_mapping:
+            name = user_mapping[name]
     statement = {
         "actor": {
-            "name": commit.author.name if userMapping is None else userMapping[commit.author.name],
+            "name": name,
             "mbox": "mailto:" + commit.author.email,
             # "account": {
             #     "name": commit.author.name,
@@ -61,7 +66,7 @@ def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes, 
         },
         "object": {
             # Ids need to be urls
-            "id": repo_name + action_data["fileUrl"],
+            "id": repo_url + action_data["fileUrl"],
             "definition": {
                 "name": {
                     "en-US": "File"
@@ -83,23 +88,21 @@ def xapi_statement(git_diff, commit, repo_name, action_type, file_line_changes, 
             "extensions": {
                 COMMIT_EXTENSION_ID: {
                     "name": "Commit Data",
-                    "repository": repo_name,
+                    "repository": repo_url,
                     "commit_hash": commit.hexsha,
                     "commit_message": commit.message,
                     "type": COMMIT_EXTENSION_ID
                 },
-                GROUP_EXTENSION : { # Added group extension
-                    repo_name: {
-                        "name": repo_name,
-                        "id": repo_name
-                    }
-
-                }
+                GROUP_EXTENSION: []
             }
         }
     }
-    if groupMapping is not None:
-        statement[GROUP_EXTENSION] = groupMapping[repo_name] # Add repo - moodle group mapping
+    if group_mapping:
+        if repo_name in group_mapping:
+            group = group_mapping[repo_name]
+            statement["context"]["extensions"][GROUP_EXTENSION] = {}
+            statement["context"]["extensions"][GROUP_EXTENSION][group] = {}
+            print("set group")
 
     if action_type == "R":
         statement["object"]["definition"]["extensions"][GIT_EXTENSION_ID]["newFileName"] = git_diff.b_path
